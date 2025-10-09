@@ -20,3 +20,4 @@ async def read(id : int ,db : AsyncSession = Depends(get_db)):
 @app.get("/categorie/{id}")
 async def read(id : int ,db : AsyncSession = Depends(get_db)):
     return await db.get(Category,id)
+

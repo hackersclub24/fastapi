@@ -14,6 +14,7 @@ class Products(Base):
     title: Mapped[str] = mapped_column(String(50), nullable=False)
     price: Mapped[int] = mapped_column(DECIMAL)
     category_id: Mapped[int] = mapped_column(Integer,ForeignKey("categories.id",ondelete="CASCADE"))
+    # one to many relationship
     category=relationship("Category",back_populates="products",lazy="selectin")
     
 class Category(Base):
@@ -24,3 +25,25 @@ class Category(Base):
     )
     title: Mapped[str] = mapped_column(String(50))
     products=relationship("Products",back_populates="category",lazy="selectin")
+
+class User(Base):
+    __tablename__ = "users"
+    id: Mapped[int] = mapped_column(
+        Integer, autoincrement=True, primary_key=True, index=True
+    )
+    name : Mapped[str] = mapped_column(String(50), nullable=False)
+    email: Mapped[EmailStr] = mapped_column(String(50), unique=True, nullable=False)
+    password : Mapped[str] =mapped_column(String(255), nullable=False)
+    # one to one relationship
+    user_profile = relationship("UserProfile", back_populates="user", uselist=False, cascade="all, delete-orphan", lazy="selectin")
+        
+class UserProfile(Base):
+    __tablename__= "user_profiles"
+    id: Mapped[int] = mapped_column(
+        Integer, autoincrement=True, primary_key=True, index=True
+    )
+    user_id : Mapped[int] = mapped_column(Integer,ForeignKey("users.id",ondelete="CASCADE"),unique=True)
+    address : Mapped[str] = mapped_column(String(255))
+    phone : Mapped[str] = mapped_column(String(15))
+    # one to one relationship
+    
