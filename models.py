@@ -45,5 +45,6 @@ class UserProfile(Base):
     user_id : Mapped[int] = mapped_column(Integer,ForeignKey("users.id",ondelete="CASCADE"),unique=True)
     address : Mapped[str] = mapped_column(String(255))
     phone : Mapped[str] = mapped_column(String(15))
+    user = relationship("User", back_populates="user_profile", lazy="selectin")
     # one to one relationship
     
