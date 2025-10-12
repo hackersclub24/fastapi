@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 from db import get_db
-from sqlalchemy import select ,and_
-from typing import List,Optional
+from sqlalchemy import select, and_
+from typing import List, Optional
 from models import Category
 from schemas import CategoryCreate, CategoryRead, CategoryUpdate
 
@@ -10,16 +10,26 @@ app = APIRouter(prefix="/categories", tags=["categories"])
 
 
 @app.get("/list-categories", response_model=List[CategoryRead])
-async def list_categories(min :Optional[int]=None ,max:Optional[int]=None ,title: Optional[str] = None,db: AsyncSession = Depends(get_db)):
+async def list_categories(
+    min: Optional[int] = None,
+    max: Optional[int] = None,
+    title: Optional[str] = None,
+    filter: Optional[str] = None,
+    db: AsyncSession = Depends(get_db),
+):
     stmt = select(Category)
     options = []
+    if filter:
+        options.append(Category.title.ilike(f"%{filter}%"))
+    if title:
+        options.append(Category.title == title)
     if min:
         options.append(Category.id >= min)
     if max:
         options.append(Category.id <= max)
     if options:
         stmt = stmt.where(and_(*options))
-    
+
     result = await db.execute(stmt)
     # categories = result.scalars().all()
     return result.scalars().all()
