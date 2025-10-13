@@ -30,3 +30,10 @@ class ProductRead(ProductBase):
 class ProductUpdate(ProductBase):
     id: int
 
+class UserBase(BaseModel):
+    name: str
+    email: str
+    password: str
+
+class UserRead(UserBase):
+    id: int

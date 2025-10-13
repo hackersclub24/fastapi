@@ -3,15 +3,30 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from db import get_db
 from models import Products, Category
 from schemas import ProductBase, ProductRead, ProductUpdate
-from sqlalchemy import select
-from typing import List
+from sqlalchemy import select, and_
+from typing import List, Optional
+
 
 app = APIRouter(prefix="/prodducts", tags=["proucts"])
 
 
-@app.get("/list-products",response_model=List[ProductRead])
-async def list_products(db: AsyncSession = Depends(get_db)):
+@app.get("/list-products", response_model=List[ProductRead])
+async def list_products(
+    min: Optional[int] = None,
+    max: Optional[int] = None,
+    filter: Optional[str] = None,
+    db: AsyncSession = Depends(get_db),
+):
     stmt = select(Products)
+    options = []
+    if min:
+        stmt = stmt.where(Products.id >= min)
+    if max:
+        stmt = stmt.where(Products.id <= max)
+    if options:
+        stmt = stmt.options(and_(*options))
+    if filter:
+        stmt = stmt.where(Products.title.ilike(f"%{filter}%"))
     result = await db.execute(stmt)
     return result.scalars().all()
 
