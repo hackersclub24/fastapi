@@ -1,6 +1,9 @@
+from dotenv import load_dotenv
+
+load_dotenv()
 from fastapi import FastAPI, Depends
 from pydantic import BaseModel
-from db import engine, get_db
+from db import engine, get_db,Base
 from contextlib import asynccontextmanager
 from fastapi import APIRouter
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -8,8 +11,15 @@ from models import Products, Category
 from routers import app_router
 
 
+@asynccontextmanager
+async def lifespan(app:FastAPI):
+    async with engine.begin() as conn:
+        res = await conn.run_sync(lambda s: engine.dialect.has_table(s,Products.__tablename__))
+        if not res : 
+            conn.run_sync(Base.metadata.create)
+    yield
 # adding github comment
-app = FastAPI()
+app = FastAPI(lifespan= lifespan)
 
 
 @app.get("/")
