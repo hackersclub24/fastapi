@@ -8,7 +8,6 @@ from sqlalchemy.orm import declarative_base
 import os
 
 DATABASE_URL = os.getenv("DATABASE_URL")
-# DATABASE_URL = "postgresql+asyncpg://postgres:admin@localhost:5432/postgres"
 engine: AsyncEngine = create_async_engine(DATABASE_URL, echo=True, future=True)
 
 sessions = async_sessionmaker(

@@ -34,6 +34,7 @@ class User(Base):
     name : Mapped[str] = mapped_column(String(50), nullable=False)
     email: Mapped[EmailStr] = mapped_column(String(50), unique=True, nullable=False)
     password : Mapped[str] =mapped_column(String(255), nullable=False)
+    last_name: Mapped[str] = mapped_column(String(50), nullable=True)
     # one to one relationship
     user_profile = relationship("UserProfile", back_populates="user", uselist=False, cascade="all, delete-orphan", lazy="selectin")
         
